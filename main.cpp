@@ -1,13 +1,29 @@
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
+#include <conio.h>
+
+#define MAX_WIDTH  20
+#define MAX_HEIGHT 20
 
 bool gameOver;
-int MAX_WIDTH  = 20; 
-int MAX_HEIGHT = 20;
+int xFruit;
+int yFruit;
+int xHead;
+int yHead;
 
 void setup() {
     gameOver = false;
+
+    xFruit = rand()%(MAX_WIDTH) + 1;
+    yFruit = rand()%(MAX_HEIGHT) + 1;
+
+    xHead = MAX_WIDTH/2;
+    yHead = MAX_HEIGHT/2;
+}
+
+void input() {
+
 }
 
 void draw() {
@@ -22,6 +38,17 @@ void draw() {
             if (i%(MAX_WIDTH-1) == 0) {
                 std::cout << "#";
             }
+
+            else if (i == xFruit and j == yFruit)
+            {
+                std::cout << "\u25A1";
+            }
+
+            else if (i == xHead and j == yHead)
+            {
+                std::cout << "\u25C9";
+            }
+            
             else {
                 std::cout << " ";
             }
@@ -40,8 +67,13 @@ void logic() {
 }
 
 int main() {
+    setup();
+
     while (!gameOver) {
         draw();
+        char key = getch();
+
+        std::count << key << std::endl;
         
         sleep(10);
     }
