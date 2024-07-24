@@ -5,44 +5,49 @@
 #include <algorithm>
 #include "../include/kbhit.h"
 
-#define MAX_WIDTH  10
-#define MAX_HEIGHT 10
-
 bool gameOver;
 int score;
 int xFruit;
 int yFruit;
 int xHead;
 int yHead;
+int gridSize;
 std::vector<std::pair<int,int>> tail;
 
 enum Directions {UP, DOWN, RIGHT, LEFT};
 Directions dir;
 
 void setup() {
+    std::cout << "Choose a grid size (at least 6): ";
+    std::cin >> gridSize;
+    while (gridSize < 6) {
+        std::cout << "Choose a grid size (at least 6): ";
+        std::cin >> gridSize;
+    }
+
     srand(time(0));
     gameOver = false;
     score = 0;
 
-    xFruit = rand()%(MAX_WIDTH-2) + 1;
-    yFruit = rand()%(MAX_HEIGHT-2) + 1;
+    xFruit = rand()%(gridSize-2) + 1;
+    yFruit = rand()%(gridSize-2) + 1;
 
-    xHead = MAX_WIDTH/2;
-    yHead = MAX_HEIGHT/2;
+    xHead = gridSize/2;
+    yHead = gridSize/2;
 
     dir = Directions::UP;
 }
 
 void draw() {
     std::system("clear");
-    for(int i=0; i<MAX_WIDTH; i++) {
+    for(int i=0; i<gridSize; i++) {
         std::cout << "#";
     }
     std::cout << std::endl;
 
-    for(int j=1; j<MAX_HEIGHT-1; j++) {
-        for(int i=0; i<MAX_WIDTH; i++) {
-            if (i%(MAX_WIDTH-1) == 0) {
+    for(int j=1; j<gridSize-1; j++) {
+        for(int i=0; i<gridSize; i++) {
+            if (i%(gridSize-1) == 0) {
                 std::cout << "#";
             }
 
@@ -68,7 +73,7 @@ void draw() {
         std::cout << std::endl;
     }
 
-    for(int i=0; i<MAX_WIDTH; i++) {
+    for(int i=0; i<gridSize; i++) {
         std::cout << "#";
     }
     std::cout <<std::endl;
@@ -77,11 +82,11 @@ void draw() {
 void logic() {
     if (xHead == xFruit && yHead == yFruit) {
         score += 1;
-        xFruit = rand()%(MAX_WIDTH-2) + 1;
-        yFruit = rand()%(MAX_HEIGHT-2) + 1;
+        xFruit = rand()%(gridSize-2) + 1;
+        yFruit = rand()%(gridSize-2) + 1;
         while (std::find(tail.begin(), tail.end(), std::pair<int, int>(xFruit, yFruit)) != tail.end() || (xFruit == xHead && yFruit == yHead)) {
-            xFruit = rand()%(MAX_WIDTH-2) + 1;
-            yFruit = rand()%(MAX_HEIGHT-2) + 1;
+            xFruit = rand()%(gridSize-2) + 1;
+            yFruit = rand()%(gridSize-2) + 1;
         }
         tail.push_back(std::pair<int, int>(xHead, yHead));
     }
@@ -207,7 +212,7 @@ void logic() {
         break;
     }
 
-    if (xHead <= 0 || xHead >= MAX_WIDTH-1 || yHead <= 0 || yHead >= MAX_HEIGHT-1) {
+    if (xHead <= 0 || xHead >= gridSize-1 || yHead <= 0 || yHead >= gridSize-1) {
         gameOver = true;
     }
 }
