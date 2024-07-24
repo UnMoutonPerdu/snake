@@ -24,7 +24,7 @@ void setup() {
     score = 0;
 
     xFruit = rand()%(MAX_WIDTH) + 1;
-    yFruit = rand()%(MAX_HEIGHT) + 1;
+    yFruit = rand()%(MAX_HEIGHT-1) + 1;
 
     xHead = MAX_WIDTH/2;
     yHead = MAX_HEIGHT/2;
@@ -70,6 +70,13 @@ void draw() {
 }
 
 void logic() {
+    if (xHead == xFruit && yHead == yFruit) {
+        score += 1;
+        xFruit = rand()%(MAX_WIDTH) + 1;
+        yFruit = rand()%(MAX_HEIGHT-1) + 1;
+        tail.push_back(std::pair<int, int>(xHead, yHead));
+    }
+
     if (_kbhit()) {
         char kInput = getchar(); 
         switch (dir)
@@ -195,6 +202,7 @@ int main() {
     while (!gameOver) {
         draw();
         std::cout << "Score: " << score << std::endl;
+        std::cout << xFruit << " " << yFruit << std::endl;
         logic();
         usleep(130000);
     }
