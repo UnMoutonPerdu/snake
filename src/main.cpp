@@ -5,8 +5,8 @@
 #include <algorithm>
 #include "../include/kbhit.h"
 
-#define MAX_WIDTH  20
-#define MAX_HEIGHT 20
+#define MAX_WIDTH  10
+#define MAX_HEIGHT 10
 
 bool gameOver;
 int score;
@@ -20,16 +20,16 @@ enum Directions {UP, DOWN, RIGHT, LEFT};
 Directions dir;
 
 void setup() {
+    srand(time(0));
     gameOver = false;
     score = 0;
 
-    xFruit = rand()%(MAX_WIDTH) + 1;
-    yFruit = rand()%(MAX_HEIGHT-1) + 1;
+    xFruit = rand()%(MAX_WIDTH-2) + 1;
+    yFruit = rand()%(MAX_HEIGHT-2) + 1;
 
     xHead = MAX_WIDTH/2;
     yHead = MAX_HEIGHT/2;
 
-    tail.push_back(std::pair<int, int>(xHead, yHead));
     dir = Directions::UP;
 }
 
@@ -40,7 +40,7 @@ void draw() {
     }
     std::cout << std::endl;
 
-    for(int j=0; j<MAX_HEIGHT; j++) {
+    for(int j=1; j<MAX_HEIGHT-1; j++) {
         for(int i=0; i<MAX_WIDTH; i++) {
             if (i%(MAX_WIDTH-1) == 0) {
                 std::cout << "#";
@@ -49,6 +49,11 @@ void draw() {
             else if (i == xFruit and j == yFruit)
             {
                 std::cout << "\u25A1";
+            }
+
+            else if (i == xHead and j == yHead)
+            {
+                std::cout << "\u25C9";
             }
 
             else if (std::find(tail.begin(), tail.end(), std::pair<int, int>(i, j)) != tail.end())
@@ -72,9 +77,18 @@ void draw() {
 void logic() {
     if (xHead == xFruit && yHead == yFruit) {
         score += 1;
-        xFruit = rand()%(MAX_WIDTH) + 1;
-        yFruit = rand()%(MAX_HEIGHT-1) + 1;
+        xFruit = rand()%(MAX_WIDTH-2) + 1;
+        yFruit = rand()%(MAX_HEIGHT-2) + 1;
+        while (std::find(tail.begin(), tail.end(), std::pair<int, int>(xFruit, yFruit)) != tail.end() || (xFruit == xHead && yFruit == yHead)) {
+            xFruit = rand()%(MAX_WIDTH-2) + 1;
+            yFruit = rand()%(MAX_HEIGHT-2) + 1;
+        }
         tail.push_back(std::pair<int, int>(xHead, yHead));
+    }
+    else {
+        if (std::find(tail.begin(), tail.end(), std::pair<int, int>(xHead, yHead)) != tail.end()) {
+            gameOver = true;
+        }
     }
 
     if (_kbhit()) {
@@ -166,6 +180,11 @@ void logic() {
         }
     }
 
+    if (score > 0) {
+        tail.erase(tail.begin());
+        tail.push_back(std::pair<int, int>(xHead, yHead));
+    }
+
     switch (dir)
     {
     case Directions::UP:
@@ -188,12 +207,9 @@ void logic() {
         break;
     }
 
-    if (xHead <= 0 || xHead >= MAX_WIDTH-1 || yHead < 0 || yHead >= MAX_HEIGHT) {
+    if (xHead <= 0 || xHead >= MAX_WIDTH-1 || yHead <= 0 || yHead >= MAX_HEIGHT-1) {
         gameOver = true;
     }
-
-    tail.erase(tail.begin());
-    tail.push_back(std::pair<int, int>(xHead, yHead));
 }
 
 int main() {
@@ -202,9 +218,9 @@ int main() {
     while (!gameOver) {
         draw();
         std::cout << "Score: " << score << std::endl;
-        std::cout << xFruit << " " << yFruit << std::endl;
+        std::cout << "Press (m) to quit" << std::endl;
         logic();
-        usleep(130000);
+        usleep(140000);
     }
 
     return 0;
