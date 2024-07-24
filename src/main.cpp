@@ -1,22 +1,27 @@
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
+#include <vector>
+#include <algorithm>
 #include "../include/kbhit.h"
 
 #define MAX_WIDTH  20
 #define MAX_HEIGHT 20
 
 bool gameOver;
+int score;
 int xFruit;
 int yFruit;
 int xHead;
 int yHead;
+std::vector<std::pair<int,int>> tail;
 
 enum Directions {UP, DOWN, RIGHT, LEFT};
 Directions dir;
 
 void setup() {
     gameOver = false;
+    score = 0;
 
     xFruit = rand()%(MAX_WIDTH) + 1;
     yFruit = rand()%(MAX_HEIGHT) + 1;
@@ -24,6 +29,7 @@ void setup() {
     xHead = MAX_WIDTH/2;
     yHead = MAX_HEIGHT/2;
 
+    tail.push_back(std::pair<int, int>(xHead, yHead));
     dir = Directions::UP;
 }
 
@@ -45,7 +51,7 @@ void draw() {
                 std::cout << "\u25A1";
             }
 
-            else if (i == xHead and j == yHead)
+            else if (std::find(tail.begin(), tail.end(), std::pair<int, int>(i, j)) != tail.end())
             {
                 std::cout << "\u25C9";
             }
@@ -178,6 +184,9 @@ void logic() {
     if (xHead <= 0 || xHead >= MAX_WIDTH-1 || yHead < 0 || yHead >= MAX_HEIGHT) {
         gameOver = true;
     }
+
+    tail.erase(tail.begin());
+    tail.push_back(std::pair<int, int>(xHead, yHead));
 }
 
 int main() {
@@ -185,11 +194,11 @@ int main() {
 
     while (!gameOver) {
         draw();
-        std::cout << gameOver << std::endl;
-        std::cout << xHead << ' ' << yHead << std::endl;
+        std::cout << "Score: " << score << std::endl;
         logic();
         usleep(130000);
     }
 
     return 0;
 }
+
